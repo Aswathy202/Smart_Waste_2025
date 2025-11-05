@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <div class="text-center mb-5">
+    <h1 class="fw-bold text-success">Contact Us</h1>
+    <p class="text-muted">
+      Have a question, suggestion, or need help with SmartWaste? We’d love to hear from you!
+    </p>
+  </div>
+
+  <div class="row justify-content-center">
+    <!-- Contact Form -->
+    <div class="col-md-6">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label">Your Name</label>
+              <input type="text" name="name" class="form-control" placeholder="Enter your name" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Email Address</label>
+              <input type="email" name="email" class="form-control" placeholder="you@example.com" required>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Message</label>
+              <textarea name="message" class="form-control" rows="4" placeholder="Write your message here..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100">Send Message</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Info / Map -->
+    <div class="col-md-5 mt-4 mt-md-0">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="fw-bold text-success mb-3">Get in Touch</h5>
+          <p><i class="bi bi-geo-alt-fill text-success"></i> Trivandrum, Kerala, India</p>
+          <p><i class="bi bi-envelope-fill text-success"></i> support@smartwaste.com</p>
+          <p><i class="bi bi-telephone-fill text-success"></i> +91 98765 43210</p>
+
+          <div class="ratio ratio-16x9 mt-3">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3946.033767074938!2d76.9366!3d8.5241!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b05bbfdded0c12f%3A0x31af2b6c7db1b1a!2sThiruvananthapuram%2C%20Kerala!5e0!3m2!1sen!2sin!4v1709708571021!5m2!1sen!2sin"
+              width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy">
+            </iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

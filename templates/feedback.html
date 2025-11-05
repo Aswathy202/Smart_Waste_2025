@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">User Feedback</h2>
+
+    <!-- Feedback Form -->
+    {% if user.is_authenticated and user.role == 'citizen' %}
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4 class="card-title">Submit Feedback</h4>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-success">Submit</button>
+            </form>
+        </div>
+    </div>
+    {% elif user.is_authenticated %}
+        <p class="text-muted">Only citizens can submit feedback.</p>
+    {% else %}
+        <p class="text-muted">Please <a href="{% url 'login' %}">login</a> to submit feedback.</p>
+    {% endif %}
+
+    <!-- Feedback List -->
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">All Feedback</h4>
+            {% for fb in feedback_list %}
+                <div class="border-bottom pb-2 mb-2">
+                    <strong>{{ fb.user.username }}</strong> 
+                    <span class="text-warning">⭐ {{ fb.rating }}/5</span>
+                    <p>{{ fb.message }}</p>
+                    <small class="text-muted">{{ fb.created_at|date:"M d, Y H:i" }}</small>
+                </div>
+            {% empty %}
+                <p>No feedback yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

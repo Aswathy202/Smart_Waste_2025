@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4 fw-bold text-success">Admin - Manage Complaints</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-success">
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Subject</th>
+                        <th>Description</th>
+                        <th>Image</th>
+                        <th>Reply</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in complaints %}
+                    <tr>
+                        <td>{{ c.id }}</td>
+                        <td>{{ c.user.username }}</td>
+                        <td>{{ c.subject }}</td>
+                        <td>{{ c.description }}</td>
+                        <td>
+        {% if c.photo %}
+          <img src="{{ c.photo.url }}" alt="Complaint photo" width="80" class="rounded shadow">
+        {% else %}
+          <span class="text-muted">No photo</span>
+        {% endif %}
+      </td>
+                        <td>
+                            {% if c.reply %}
+                                <div class="text-success"><b>{{ c.reply }}</b></div>
+                            {% else %}
+                                <span class="text-muted">No reply yet</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if c.status == 'Resolved' %}
+                                <span class="badge bg-success">{{ c.status }}</span>
+                            {% elif c.status == 'In Progress' %}
+                                <span class="badge bg-warning text-dark">{{ c.status }}</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ c.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="post" class="d-flex align-items-center">
+                                {% csrf_token %}
+                                <input type="hidden" name="complaint_id" value="{{ c.id }}">
+                                <input type="text" name="reply" class="form-control form-control-sm me-2" placeholder="Type reply..." required>
+                                <select name="status" class="form-select form-select-sm me-2">
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Resolved">Resolved</option>
+                                </select>
+                                <button type="submit" class="btn btn-success btn-sm">Send</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">No complaints yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

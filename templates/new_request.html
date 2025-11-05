@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Submit New Waste Pickup Request</h3>
+<form method="POST">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label>Waste Type:</label>
+        <select name="waste_type" class="form-select">
+            <option>Plastic</option>
+            <option>Paper</option>
+            <option>Metal</option>
+            <option>Organic</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label>Quantity:</label>
+        <input type="text" name="quantity" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label>Location:</label>
+        <input type="text" name="location" class="form-control" required>
+    </div>
+    <button class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}

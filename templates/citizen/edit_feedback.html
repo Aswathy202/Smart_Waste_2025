@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="fw-bold text-success mb-3"><i class="bi bi-pencil"></i> Edit Feedback</h3>
+
+    <form method="post" class="card p-3 shadow-sm border-0">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="message" class="form-label fw-semibold">Message</label>
+            <textarea name="message" id="message" rows="5" class="form-control">{{ feedback.message }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Update Feedback</button>
+        <a href="{% url 'my_feedbacks' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

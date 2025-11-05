@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-success mb-4 text-center">Citizen Dashboard</h2>
+
+    <!-- New Waste Request Form -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title text-success">Submit a New Waste Pickup Request</h5>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="waste_type" class="form-label">Waste Type</label>
+                        <select name="waste_type" class="form-select" required>
+                            <option value="">Select Waste Type</option>
+                            <option value="Plastic">Plastic</option>
+                            <option value="Paper">Paper</option>
+                            <option value="Metal">Metal</option>
+                            <option value="Organic">Organic</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="quantity" class="form-label">Quantity</label>
+                        <input type="text" name="quantity" class="form-control" placeholder="e.g. 2 kg" required>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" name="location" class="form-control" placeholder="Enter pickup address" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success w-100">Submit Request</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Request List -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title text-success">Your Waste Pickup Requests</h5>
+
+            {% if requests %}
+                <table class="table table-bordered mt-3">
+                    <thead class="table-success">
+                        <tr>
+                            <th>ID</th>
+                            <th>Waste Type</th>
+                            <th>Quantity</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for req in requests %}
+                        <tr>
+                            <td>{{ req.id }}</td>
+                            <td>{{ req.waste_type }}</td>
+                            <td>{{ req.quantity }}</td>
+                            <td>{{ req.location }}</td>
+                            <td>
+                                {% if req.status == 'Pending' %}
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                {% elif req.status == 'Assigned' %}
+                                    <span class="badge bg-info text-dark">Assigned</span>
+                                {% elif req.status == 'Collected' %}
+                                    <span class="badge bg-primary">Collected</span>
+                                {% elif req.status == 'Recycled' %}
+                                    <span class="badge bg-success">Recycled</span>
+                                {% else %}
+                                    {{ req.status }}
+                                {% endif %}
+                            </td>
+                            <td>{{ req.created_at|date:"M d, Y" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="text-center mt-3 text-muted">No waste requests submitted yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

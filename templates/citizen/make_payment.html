@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5 text-center">
+  <h2 class="text-success mb-3">💳 Pay for Waste Collection</h2>
+  <p class="text-muted">Pay ₹{{ amount }} for this month’s waste collection.</p>
+
+  <form action="/payment-success/" method="POST">
+    {% csrf_token %}
+    <script
+        src="https://checkout.razorpay.com/v1/checkout.js"
+        data-key="{{ key_id }}"
+        data-amount="{{ amount|floatformat:2 }}"
+        data-currency="INR"
+        data-order_id="{{ order_id }}"
+        data-buttontext="Pay ₹{{ amount }}"
+        data-name="SmartWaste"
+        data-description="Waste Collection Fee"
+        data-theme.color="#198754">
+    </script>
+  </form>
+</div>
+{% endblock %}

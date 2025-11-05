@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="text-success mb-3">Report a Complaint</h2>
+
+  <!-- Complaint Form -->
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    
+
+    <button type="submit" class="btn btn-success">Submit</button>
+  </form>
+
+  <hr class="my-4">
+  <h4>Your Complaints</h4>
+
+  <!-- Complaints Table -->
+  <table class="table table-hover align-middle">
+    <thead class="table-success">
+      <tr>
+        <th>Subject</th>
+        <th>Description</th>
+        <th>Photo</th>
+        <th>Status</th>
+        <th>Admin Reply</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in complaints %}
+      <tr>
+        <td>{{ c.subject }}</td>
+        <td>{{ c.description }}</td>
+
+        <!-- ✅ Show image thumbnail or "No photo" text -->
+        <td>
+          {% if c.photo %}
+            <a href="{{ c.photo.url }}" target="_blank">
+              <img src="{{ c.photo.url }}" alt="Complaint Photo" width="60" height="60" style="object-fit: cover; border-radius: 6px;">
+            </a>
+          {% else %}
+            <span class="text-muted">No photo</span>
+          {% endif %}
+        </td>
+
+        <!-- ✅ Complaint Status -->
+        <td>
+          {% if c.status == 'Pending' %}
+            <span class="badge bg-warning text-dark">Pending</span>
+          {% elif c.status == 'In Progress' %}
+            <span class="badge bg-info text-dark">In Progress</span>
+          {% else %}
+            <span class="badge bg-success">Resolved</span>
+          {% endif %}
+        </td>
+
+        <!-- ✅ Admin Reply -->
+        <td>
+          {% if c.reply %}
+            {{ c.reply }}
+          {% else %}
+            <span class="text-muted">No reply yet</span>
+          {% endif %}
+        </td>
+
+        <td>{{ c.created_at|date:"d M Y" }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" class="text-center text-muted">No complaints yet.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

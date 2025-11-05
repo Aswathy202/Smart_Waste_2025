@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="text-success mb-3">All Complaints</h2>
+
+  <table class="table table-hover">
+    <thead class="table-success">
+      <tr>
+        <th>Citizen</th>
+        <th>Subject</th>
+        <th>Description</th>
+        <th>Photo</th>
+        <th>Status</th>
+        <th>Admin Reply</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in complaints %}
+      <tr>
+        <td>{{ c.user.username }}</td>
+        <td>{{ c.subject }}</td>
+        <td>{{ c.description }}</td>
+        <td>
+          {% if c.photo %}
+            <a href="{{ c.photo.url }}" target="_blank">
+              <img src="{{ c.photo.url }}" alt="Complaint photo" width="80" class="rounded shadow">
+            </a>
+          {% else %}
+            <span class="text-muted">No photo</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if c.status == 'Pending' %}
+            <span class="badge bg-warning text-dark">Pending</span>
+          {% elif c.status == 'In Progress' %}
+            <span class="badge bg-info text-dark">In Progress</span>
+          {% else %}
+            <span class="badge bg-success">Resolved</span>
+          {% endif %}
+        </td>
+        <td>{{ c.reply|default:"—" }}</td>
+        <td>{{ c.created_at|date:"d M Y" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" class="text-center text-muted">No complaints found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
