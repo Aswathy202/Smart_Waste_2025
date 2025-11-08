@@ -84,7 +84,6 @@ def new_waste_request(request):
 
 @login_required
 def collector_dashboard(request):
-    # Only collectors can access this page
     if request.user.role != 'collector':
         messages.error(request, "Access denied.")
         return redirect('home')
@@ -92,7 +91,6 @@ def collector_dashboard(request):
     collector = request.user
     assigned_requests = WasteRequest.objects.filter(assigned_collector=collector)
 
-    # Handle status updates
     if request.method == 'POST':
         request_id = request.POST.get('request_id')
         new_status = request.POST.get('status')
@@ -101,7 +99,6 @@ def collector_dashboard(request):
         waste_request.save()
         print(f"🧾 Status updated for request {request_id}: {new_status}")
 
-        # 🌱 Award eco points to the citizen when marked as recycled
         if new_status == "Recycled":
             waste_request.user.eco_points += 20
             waste_request.user.save()
@@ -109,7 +106,6 @@ def collector_dashboard(request):
         messages.success(request, f"Status updated to '{new_status}' successfully.")
         return redirect('collector_dashboard')
 
-    # Summary counts
     summary = {
         "total": assigned_requests.count(),
         "pending": assigned_requests.filter(status="Pending").count(),
@@ -117,7 +113,6 @@ def collector_dashboard(request):
         "recycled": assigned_requests.filter(status="Recycled").count(),
     }
 
-    # Map setup
     geolocator = Nominatim(user_agent="smartwaste")
     map_data = []
     for req in assigned_requests:
@@ -130,8 +125,7 @@ def collector_dashboard(request):
         if location:
             lat, lon = location.latitude, location.longitude
         else:
-            lat, lon = 8.5241, 76.9366  # Default Trivandrum
-
+            lat, lon = 8.5241, 76.9366 
         map_data.append({
             "latitude": lat,
             "longitude": lon,
@@ -151,18 +145,14 @@ def collector_dashboard(request):
 @login_required
 @login_required
 def admin_dashboard(request):
-    # Restrict access
     if request.user.role != 'admin':
         messages.error(request, "Access denied.")
         return redirect('home')
 
-    # Fetch all requests (most recent first)
     all_requests = WasteRequest.objects.select_related('user', 'assigned_collector').order_by('-created_at')
 
-    # Get all collectors for dropdown
     collectors = User.objects.filter(role='collector')
 
-    # Handle collector assignment
     if request.method == 'POST':
         request_id = request.POST.get('request_id')
         collector_id = request.POST.get('collector_id')
@@ -178,7 +168,6 @@ def admin_dashboard(request):
             messages.error(request, "Something went wrong while assigning the collector.")
         return redirect('admin_dashboard')
 
-    # ✅ Summary for waste requests
     summary = {
         'total': all_requests.count(),
         'pending': all_requests.filter(status='Pending').count(),
@@ -186,15 +175,12 @@ def admin_dashboard(request):
         'recycled': all_requests.filter(status='Recycled').count(),
     }
 
-    # ✅ Complaint stats
     pending_complaints = Complaint.objects.filter(status='Pending').count()
     resolved_complaints = Complaint.objects.filter(status='Resolved').count()
 
-    # ✅ Payment stats
     total_payments = Payment.objects.filter(status='Success').count()
     total_amount = Payment.objects.filter(status='Success').aggregate(Sum('amount'))['amount__sum'] or 0
 
-    # ✅ Context for template
     context = {
         'requests': all_requests,
         'collectors': collectors,
@@ -217,7 +203,6 @@ def citizen_dashboard(request):
         messages.error(request, "Access denied.")
         return redirect('home')
 
-    # Handle new request form
     if request.method == 'POST':
         waste_type = request.POST.get('waste_type')
         quantity = request.POST.get('quantity')
@@ -230,12 +215,11 @@ def citizen_dashboard(request):
             location=location,
         )
         messages.success(request, "Your waste pickup request has been submitted.")
-        request.user.eco_points += 10  # Earn 10 points
+        request.user.eco_points += 10  
         request.user.save()
         messages.success(request, "Waste pickup request submitted! +10 eco points 🌱")
         return redirect('citizen_dashboard')
 
-    # Fetch user's requests
     my_requests = WasteRequest.objects.filter(user=request.user).order_by('-created_at')
 
     context = {
@@ -256,7 +240,6 @@ def feedback_view(request):
     feedback_list = Feedback.objects.all().order_by('-created_at')
     form = None
 
-    # Allow only citizens to submit feedback
     if request.user.is_authenticated and hasattr(request.user, 'role') and request.user.role == 'citizen':
         if request.method == 'POST':
             form = FeedbackForm(request.POST)
@@ -341,9 +324,8 @@ def admin_complaints(request):
 
 @login_required
 def collector_complaints(request):
-    # Ensure only collectors can access this page
     if request.user.role != 'collector':
-        return redirect('home')  # or any page you want to redirect to
+        return redirect('home') 
 
     complaints = Complaint.objects.all().order_by('-created_at')
     return render(request, 'collector/complaints.html', {'complaints': complaints})
@@ -404,12 +386,11 @@ def contact_view(request):
         email = request.POST.get('email')
         message = request.POST.get('message')
 
-        # (Optional) Send email to admin
         send_mail(
             subject=f"SmartWaste Contact from {name}",
             message=f"Sender: {name}\nEmail: {email}\n\nMessage:\n{message}",
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=['admin@smartwaste.com'],  # change to your admin email
+            recipient_list=['admin@smartwaste.com'], 
             fail_silently=True,
         )
 
@@ -424,11 +405,9 @@ def make_payment(request):
         messages.error(request, "Access denied.")
         return redirect('home')
 
-    # Amount per pickup (₹50)
-    amount = 50 * 100  # Razorpay works in paise
+    amount = 50 * 100  
     client = razorpay.Client(auth=(settings.RZP_KEY_ID, settings.RZP_KEY_SECRET))
 
-    # Create order
     payment_data = {
         "amount": amount,
         "currency": "INR",
@@ -436,7 +415,6 @@ def make_payment(request):
     }
     order = client.order.create(payment_data)
 
-    # Save payment record
     Payment.objects.create(
         user=request.user,
         amount=50,
@@ -462,7 +440,7 @@ def payment_success(request):
             payment.payment_id = payment_id
             payment.status = "Success"
             payment.save()
-            payment.user.eco_points += 15  # 🎁 Reward citizen
+            payment.user.eco_points += 15  
             payment.user.save()
 
         messages.success(request, "Payment successful! +15 eco points 🌱")

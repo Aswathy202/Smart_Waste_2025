@@ -22,7 +22,7 @@ class FeedbackForm(forms.ModelForm):
 class ComplaintForm(forms.ModelForm):
     class Meta:
         model = Complaint
-        fields = ['subject', 'description', 'photo']  # include photo here
+        fields = ['subject', 'description', 'photo']
         widgets = {
             'subject': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
