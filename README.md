@@ -34,7 +34,7 @@ It connects **citizens**, **collectors**, and **administrators** in one smart pl
 ##  Tech Stack
 - **Backend:** Django (Python)
 - **Frontend:** HTML5, CSS3, Bootstrap
-- **Database:** SQLite3
+- **Database:** MySQL
 - **Maps:** Leaflet + OpenStreetMap
 - **Payment Gateway:** Razorpay
 - **Libraries:** Geopy, Chart.js
